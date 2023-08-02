@@ -7,7 +7,7 @@ export class PixabayAPI {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
-    this.perPageImg = 20;
+    this.perPageImg = 40;
     this.typeImage = 'photo';
     this.orientationImg = 'horizontal';
     this.safeSearchAge = true;
@@ -33,7 +33,6 @@ export class PixabayAPI {
       .get(`${this.#BASE_URL}?${searchParams}`)
       .then(({ data }) => {
         console.log(data);
-        // this.incrementPage();
         return data;
       });
 

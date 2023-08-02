@@ -37,11 +37,13 @@ function handleSearchArticles(event) {
           'Sorry, there are no images matching your search query. Please try again.'
         );
       }
+
       Notify.success(`Hooray! We found ${response.totalHits} images.`);
       newsApiService.incrementPage();
       createGalleryCards(response.hits);
-      smoothScrolling(0.25);
+      smoothScrolling(0.3);
       loadMoreBtn.classList.remove('is-hidden');
+      checkTotalImages(response);
     })
     .catch(err => {
       Notify.failure(`❌${err.message}❌`);
@@ -50,11 +52,10 @@ function handleSearchArticles(event) {
 
 function searchMoreArticles() {
   newsApiService.fetchPosts().then(response => {
-    const numb = newsApiService.multiplyPages();
-    if (response.totalHits <= numb) loadMoreBtn.classList.add('is-hidden');
+    checkTotalImages(response);
     newsApiService.incrementPage();
     createGalleryCards(response.hits);
-    smoothScrolling(2.1);
+    smoothScrolling(2.7);
   });
 
   //   loadMoreBtn.disable();
@@ -90,4 +91,9 @@ function createGalleryCards(images) {
 
 function clearGalleryContainer() {
   listCardsEl.innerHTML = '';
+}
+
+function checkTotalImages(obj) {
+  const numb = newsApiService.multiplyPages();
+  if (obj.totalHits <= numb) loadMoreBtn.classList.add('is-hidden');
 }
