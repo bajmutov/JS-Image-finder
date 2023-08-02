@@ -2,7 +2,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { PixabayAPI } from './js/api';
-import smoothScrolling from './js/smoothScroll';
+import { smoothScrolling } from './js/smoothScroll';
 
 const searchForm = document.querySelector('.search-form');
 const loadMoreBtn = document.querySelector('.load-more');
@@ -40,6 +40,7 @@ function handleSearchArticles(event) {
       Notify.success(`Hooray! We found ${response.totalHits} images.`);
       newsApiService.incrementPage();
       createGalleryCards(response.hits);
+      smoothScrolling(0.25);
       loadMoreBtn.classList.remove('is-hidden');
     })
     .catch(err => {
@@ -48,21 +49,13 @@ function handleSearchArticles(event) {
 }
 
 function searchMoreArticles() {
-  newsApiService
-    .fetchPosts()
-    .then(response => {
-      const numb = newsApiService.multiplyPages();
-      if (response.totalHits <= numb) {
-        loadMoreBtn.classList.add('is-hidden');
-      }
-
-      newsApiService.incrementPage();
-      createGalleryCards(response.hits);
-      smoothScrolling();
-    })
-    .catch(err => {
-      Notify.failure(`❌${err.message}❌`);
-    });
+  newsApiService.fetchPosts().then(response => {
+    const numb = newsApiService.multiplyPages();
+    if (response.totalHits <= numb) loadMoreBtn.classList.add('is-hidden');
+    newsApiService.incrementPage();
+    createGalleryCards(response.hits);
+    smoothScrolling(2.1);
+  });
 
   //   loadMoreBtn.disable();
   //   newsApiService.fetchArticles().then(articles => {
