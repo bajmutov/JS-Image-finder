@@ -2,11 +2,12 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { PixabayAPI } from './js/api';
+import smoothScrolling from './js/smoothScroll';
 
 const searchForm = document.querySelector('.search-form');
 const loadMoreBtn = document.querySelector('.load-more');
 const listCardsEl = document.querySelector('.gallery');
-
+console.log(listCardsEl);
 const newsApiService = new PixabayAPI();
 
 searchForm.addEventListener('submit', handleSearchArticles);
@@ -39,7 +40,6 @@ function handleSearchArticles(event) {
       Notify.success(`Hooray! We found ${response.totalHits} images.`);
       newsApiService.incrementPage();
       createGalleryCards(response.hits);
-
       loadMoreBtn.classList.remove('is-hidden');
     })
     .catch(err => {
@@ -58,6 +58,7 @@ function searchMoreArticles() {
 
       newsApiService.incrementPage();
       createGalleryCards(response.hits);
+      smoothScrolling();
     })
     .catch(err => {
       Notify.failure(`❌${err.message}❌`);

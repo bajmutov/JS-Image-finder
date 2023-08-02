@@ -7,7 +7,7 @@ export class PixabayAPI {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
-    this.perPageImg = 3;
+    this.perPageImg = 20;
     this.typeImage = 'photo';
     this.orientationImg = 'horizontal';
     this.safeSearchAge = true;
