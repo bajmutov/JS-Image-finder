@@ -1,0 +1,46 @@
+.button {
+  display: block;
+  margin-left: 15px;
+  min-width: 200px;
+  padding: 14px 4px;
+  background-color: #34495e;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 250ms linear;
+}
+
+.load-more {
+  margin: 0 auto;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #852240;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  padding: 14px;
+  margin: 0 auto;
+  margin-bottom: 24px;
+  background-color: #5c35f8;
+}
+
+input {
+  width: 300px;
+  padding: 15px;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px 5%;
+  margin-bottom: 40px;
+}
+
+.is-hidden {
+  display: none;
+}
