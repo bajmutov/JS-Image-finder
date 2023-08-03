@@ -40,6 +40,7 @@ function handleSearchArticles(event) {
     .fetchPosts()
     .then(response => {
       if (!response.hits.length) {
+        searchFormButton.enableSearch();
         throw new Error(
           'Sorry, there are no images matching your search query. Please try again.'
         );
