@@ -3,31 +3,38 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { PixabayAPI } from './js/api';
 import { smoothScrolling } from './js/smoothScroll';
+import LoadMoreBtn from './js/load-more-btn';
 
 const searchForm = document.querySelector('.search-form');
-const loadMoreBtn = document.querySelector('.load-more');
 const listCardsEl = document.querySelector('.gallery');
-console.log(listCardsEl);
+
 const newsApiService = new PixabayAPI();
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '.load-more',
+  hidden: true,
+});
+const searchFormButton = new LoadMoreBtn({
+  selector: '[data-action="search"]',
+  hidden: false,
+});
 
 searchForm.addEventListener('submit', handleSearchArticles);
-loadMoreBtn.addEventListener('click', searchMoreArticles);
-
-loadMoreBtn.classList.add('is-hidden');
+loadMoreBtn.refs.button.addEventListener('click', searchMoreArticles);
 
 function handleSearchArticles(event) {
   event.preventDefault();
-
-  loadMoreBtn.classList.add('is-hidden');
   newsApiService.query = event.currentTarget.elements.searchQuery.value;
-
+  loadMoreBtn.hide();
   newsApiService.resetPage();
   clearGalleryContainer();
 
-  const searchImg = newsApiService.query.trim();
-  if (!searchImg) {
+  const searchInInputImg = newsApiService.query.trim();
+  if (!searchInInputImg) {
     return Notify.failure(`❌Еnter a word to search for❌`);
   }
+  searchFormButton.disable();
+  // loadMoreBtn.show();
+  loadMoreBtn.disable();
 
   newsApiService
     .fetchPosts()
@@ -42,7 +49,9 @@ function handleSearchArticles(event) {
       newsApiService.incrementPage();
       createGalleryCards(response.hits);
       smoothScrolling(0.3);
-      loadMoreBtn.classList.remove('is-hidden');
+      loadMoreBtn.show();
+      loadMoreBtn.enableLoadMore();
+      searchFormButton.enableSearch();
       checkTotalImages(response);
     })
     .catch(err => {
@@ -51,42 +60,54 @@ function handleSearchArticles(event) {
 }
 
 function searchMoreArticles() {
+  loadMoreBtn.disable();
   newsApiService.fetchPosts().then(response => {
+    loadMoreBtn.enableLoadMore();
+
     checkTotalImages(response);
     newsApiService.incrementPage();
     createGalleryCards(response.hits);
     smoothScrolling(2.7);
   });
-
-  //   loadMoreBtn.disable();
-  //   newsApiService.fetchArticles().then(articles => {
-  //     appendArticlesMarkup(articles);
-  //     loadMoreBtn.enable();
 }
 
 function createGalleryCards(images) {
   const markup = images
-    .map(hits => {
-      return `<div class="photo-card">
-  <img src="${hits.webformatURL}" alt="${hits.tags}" loading="lazy" width="360" height="240" />
+    .map(
+      ({
+        largeImageURL,
+        webformatURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `<div class="photo-card">
+      <a class="gallery__link" href="${largeImageURL}">
+  <img  class="gallery__image" src="${webformatURL}" alt="${tags}" loading="lazy" width="360" height="240" />
+   </a>
   <div class="info">
     <p class="info-item">
-      <b>Likes</b> ${hits.likes}
+      <b>Likes</b> ${likes}
     </p>
     <p class="info-item">
-      <b>Views</b> ${hits.views}
+      <b>Views</b> ${views}
     </p>
     <p class="info-item">
-      <b>Comments</b> ${hits.comments}
+      <b>Comments</b> ${comments}
     </p>
     <p class="info-item">
-      <b>Downloads</b> ${hits.downloads}
+      <b>Downloads</b> ${downloads}
     </p>
   </div>
 </div>`;
-    })
+      }
+    )
     .join('');
   listCardsEl.insertAdjacentHTML('beforeend', markup);
+
+  createSimpleLightboxImage();
 }
 
 function clearGalleryContainer() {
@@ -95,5 +116,13 @@ function clearGalleryContainer() {
 
 function checkTotalImages(obj) {
   const numb = newsApiService.multiplyPages();
-  if (obj.totalHits <= numb) loadMoreBtn.classList.add('is-hidden');
+  if (obj.totalHits <= numb) loadMoreBtn.refs.button.classList.add('is-hidden');
+}
+
+function createSimpleLightboxImage() {
+  const lightbox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
+    captionDelay: 250,
+  });
+  // lightbox.refresh(); ???? навіщо цей метод???
 }
