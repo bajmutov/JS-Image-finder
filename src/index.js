@@ -47,13 +47,13 @@ function handleSearchArticles(event) {
       }
 
       Notify.success(`Hooray! We found ${response.totalHits} images.`);
-      newsApiService.incrementPage();
       createGalleryCards(response.hits);
       smoothScrolling(0.3);
       loadMoreBtn.show();
       loadMoreBtn.enableLoadMore();
       searchFormButton.enableSearch();
       checkTotalImages(response);
+      newsApiService.incrementPage();
     })
     .catch(err => {
       Notify.failure(`❌${err.message}❌`);
